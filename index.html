@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Wamp.io : An implementation of the Autobahn WebSockets RPC/PubSub: WebSocket Application Messaging Protocol (WAMP) for WebSocket.IO or Engine.IO" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Wamp.io</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/polvorio/wamp.io">View on GitHub</a>
+
+          <h1 id="project_title">Wamp.io</h1>
+          <h2 id="project_tagline">An implementation of the Autobahn WebSockets RPC/PubSub: WebSocket Application Messaging Protocol (WAMP) for WebSocket.IO or Engine.IO</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/polvorio/wamp.io/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/polvorio/wamp.io/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="wampio-autobahn-websockets-rpcpubsub" class="anchor" href="#wampio-autobahn-websockets-rpcpubsub"><span class="octicon octicon-link"></span></a>WAMP.IO: Autobahn WebSockets RPC/PubSub</h1>
+
+<p>This is an implentation of the <a href="http://www.tavendo.de/autobahn/protocol.html">WebSocket Application Messaging Protocol (WAMP)</a> proposed by Travendo.</p>
+
+<p>It attaches to a <a href="https://github.com/einaros/ws/">WebSocket server</a> and provides mechanisms for</p>
+
+<ul>
+<li>
+<strong>Request and Response</strong> and</li>
+<li><strong>Publish and Subscribe</strong></li>
+</ul><h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>
+<a name="simple-pubsub-server" class="anchor" href="#simple-pubsub-server"><span class="octicon octicon-link"></span></a>Simple PubSub server</h3>
+
+<p>By default, wamp.io provides a simple PubSub server that enables client to subscribe to any topic and to send events to any topic.</p>
+
+<h4>
+<a name="attach-wamp-to-a-websocketio-server" class="anchor" href="#attach-wamp-to-a-websocketio-server"><span class="octicon octicon-link"></span></a>Attach WAMP to a WebSocket.IO server</h4>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">wsio</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'websocket.io'</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">wamp</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'wamp.io'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">ws</span> <span class="o">=</span> <span class="nx">wsio</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">9000</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">wamp</span><span class="p">.</span><span class="nx">attach</span><span class="p">(</span><span class="nx">ws</span><span class="p">);</span>
+</pre></div>
+
+<h4>
+<a name="attach-wamp-to-an-engineio-server" class="anchor" href="#attach-wamp-to-an-engineio-server"><span class="octicon octicon-link"></span></a>Attach WAMP to an Engine.IO server</h4>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">eio</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'engine.io'</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">wamp</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'wamp.io'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">engine</span> <span class="o">=</span> <span class="nx">eio</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">9000</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">wamp</span><span class="p">.</span><span class="nx">attach</span><span class="p">(</span><span class="nx">engine</span><span class="p">);</span>
+</pre></div>
+
+<h3>
+<a name="simple-rpc-server" class="anchor" href="#simple-rpc-server"><span class="octicon octicon-link"></span></a>Simple RPC server</h3>
+
+<p>The server emits the <code>call</code> event when an RPC function is called. Results can be returned using the callback parameter.</p>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">wsio</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'websocket.io'</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">wamp</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'wamp.io'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">ws</span> <span class="o">=</span> <span class="nx">wsio</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">9000</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">wamp</span><span class="p">.</span><span class="nx">attach</span><span class="p">(</span><span class="nx">ws</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'call'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">procUri</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">procUri</span> <span class="o">===</span> <span class="s1">'isEven'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="simple-rpc-client" class="anchor" href="#simple-rpc-client"><span class="octicon octicon-link"></span></a>Simple RPC client</h3>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">when</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'when'</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">wamp</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'wamp.io'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">wamp</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'ws://localhost:9000'</span><span class="p">,</span>
+    <span class="c1">// WAMP session was established</span>
+    <span class="kd">function</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'new wamp session'</span><span class="p">);</span>
+
+      <span class="nx">session</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="s2">"test:isEven"</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>      
+        <span class="p">.</span><span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span>
+            <span class="c1">// RPC success callback</span>
+            <span class="kd">function</span> <span class="p">(</span><span class="nx">reply</span><span class="p">)</span>
+            <span class="p">{</span>
+              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"result: "</span> <span class="o">+</span> <span class="nx">reply</span><span class="p">);</span>
+            <span class="p">},</span>
+
+            <span class="c1">// RPC error callback</span>
+            <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">desc</span><span class="p">)</span> 
+            <span class="p">{</span>        
+              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"error: "</span> <span class="o">+</span> <span class="nx">desc</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">);</span>      
+    <span class="p">},</span>
+
+    <span class="c1">// WAMP session is gone</span>
+    <span class="kd">function</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> 
+    <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'wamp session is gone'</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">);</span>  
+</pre></div>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>(The MIT License)</p>
+
+<p>Copyright (c) 2013 Nico Kaiser &lt;<a href="mailto:nico@kaiser.me">nico@kaiser.me</a>&gt;</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Wamp.io maintained by <a href="https://github.com/polvorio">polvorio</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
